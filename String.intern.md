@@ -1,13 +1,14 @@
-一 String.intern
-1 String为什么不可变性
+# 一 String.intern
 
-字符串常量池的需要
+## 1 String为什么不可变性
+
+### 字符串常量池的需要
 
 字符串常量池的诞生是为了提升效率和减少内存分配
 程序有大部分时间在处理字符串，字符串很大概率会出现重复的情况。String的不可变性使常量池很容易被管理和优化
 
 
-安全性考虑
+### 安全性考虑
 
 字符串使用频繁，设计成不可变，有效防止字符串被有意或者无意的篡改
 String类被final修饰，同时所有的属性都被final修饰，即不可变
@@ -15,13 +16,13 @@ String类被final修饰，同时所有的属性都被final修饰，即不可变
 
 作为HashMap、HashTable等hash型数据key的必要
 
-2 String常量池的设计
+## 2 String常量池的设计
 
 字符串常量存储在方法区的PermGen Space。在jdk1.7之后，字符串常量重新被移到了堆中
 常量池指的是在编译期被确定，并被保存在已编译的.class文件中的一些数据。它包括了关于类、方法、接口等中的常量，也包括字符串常量。
 Java会确保一个常量池中相同的字符串常量有且仅有一个
 
-3 String.intern方法
+## 3 String.intern方法
 
 String str="kvill" 和 String str=new String("kvill")的区别
 
@@ -78,8 +79,10 @@ System.out.println( s0==s1);//false,虽然执行了s1.intern(),但它的返回�
 System.out.println( s0==s1.intern());//true, s1.intern()返回的是常量池中"kvill"的引用
 System.out.println( s0==s2 );//true
 
-二 str2.intern()在jdk7和jdk6的重点分析
-1 str2.intern()在jdk7和jdk6的区别
+# 二 str2.intern()在jdk7和jdk6的重点分析
+
+## 1 str2.intern()在jdk7和jdk6的区别
+
 示例4
 
 jdk7
@@ -128,7 +131,8 @@ String s1=new String("str") + new String("01");//生成了3个对象，常量池
 String s2 = new String(s1);//这种方式创建String，并不会去常量池创建s1中的"str01"对象，而是仅在堆里创建一个s2对象
 System.out.println(s2.intern() == s2); //s2.intern()发现没常量池中没有"str01"对象, 将堆中s2的引用返回；结果为true
 
-三 其他问题
+# 三 其他问题
+
 String s1 = “abc”;
 String s2 = “a”;
 String s3 = “bc”;
