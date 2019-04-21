@@ -32,8 +32,8 @@ String str="kvill" 和 String str=new String("kvill")的区别
 
 String对象的创建
 
-String str1 = new String("kvill")；
-String str2 = new String("kvill");
+    String str1 = new String("kvill")；
+    String str2 = new String("kvill");
 
 new str1时创建了两个对象，先在常量池中创建的"kvill"对象，再在堆中创建string对象，注意这个创建的先后顺序;
 new str2时创建一个对象，堆中的另外一个string对象
@@ -42,21 +42,21 @@ String s2 = new String(s1);
 
 这种方式创建s2的过程中，并不会去常量池中创建s1的"str01"对象，而是仅在堆里创建一个s2对象
 示例1
-String s0="kvill";
-String s1="kvill";
-String s2="kv" + "ill";
-System.out.println( s0==s1 );//true
-System.out.println( s0==s2 );//true
+    String s0="kvill";
+    String s1="kvill";
+    String s2="kv" + "ill";
+    System.out.println( s0==s1 );//true
+    System.out.println( s0==s2 );//true
 
 s0和s1中的"kvill"都是字符串常量，它们在编译期就被确定了, 存在常量池中，且只有一个, 所以s0==s1为true
 而"kv"和"ill"也都是字符串常量，编译阶段会直接合成一个字符串，进而去常量池中查找是否存在"kvill"，所以s2在编译期就被解析为一个字符串常量，它也是常量池中"kvill"的一个引用，s0==s2为true
 示例2
-String s0="kvill";
-String s1=new String("kvill");
-String s2="kv" + new String("ill");
-System.out.println( s0==s1 );//false
-System.out.println( s0==s2 );//false
-System.out.println( s1==s2 );//false
+    String s0="kvill";
+    String s1=new String("kvill");
+    String s2="kv" + new String("ill");
+    System.out.println( s0==s1 );//false
+    System.out.println( s0==s2 );//false
+    System.out.println( s1==s2 );//false
 
 s0还是常量池中"kvill"的引用，s1因为无法在编译期确定，所以是运行时创建的新对象"kvill"的引用
 s2因为有后半部分new String("ill")所以也无法在编译期确定，所以也是一个新创建对象"kvill"的引用
@@ -69,8 +69,8 @@ String.intern()方法的作用
 
 
 示例3
-String s0= "kvill";
-String s1=new String("kvill");
+    String s0= "kvill";
+    String s1=new String("kvill");
 String s2=new String("kvill");
 System.out.println( s0==s1 );//false
 s1.intern();
