@@ -4,42 +4,43 @@
 
 ### 字符串常量池的需要
 
-字符串常量池的诞生是为了`提升效率和减少内存分配`
-程序有大部分时间在处理字符串，字符串很大概率会出现重复的情况。String的不可变性`使常量池很容易被管理和优化`
+* 字符串常量池的诞生是为了`提升效率和减少内存分配`
+* 程序有大部分时间在处理字符串，字符串很大概率会出现重复的情况。String的不可变性`使常量池很容易被管理和优化`
 
 
 ### 安全性考虑
 
-字符串使用频繁，设计成不可变，`有效防止字符串被有意或者无意的篡改`
-String类被final修饰，同时所有的属性都被final修饰，即不可变
+* 字符串使用频繁，设计成不可变，`有效防止字符串被有意或者无意的篡改`
+* String类被final修饰，同时所有的属性都被final修饰，即不可变
 
 
-作为HashMap、HashTable等hash型数据key的必要
+### 作为HashMap、HashTable等hash型数据key的必要
 
 ## 2 String常量池的设计
 
-字符串常量存储在方法区的PermGen Space。在jdk1.7之后，字符串常量重新被移到了堆中
-常量池指的是在编译期被确定，并被保存在已编译的.class文件中的一些数据。它包括了关于类、方法、接口等中的常量，也包括字符串常量。
-Java会确保一个常量池中相同的字符串常量有且仅有一个
+* 字符串常量存储在方法区的PermGen Space。在jdk1.7之后，字符串常量重新被移到了堆中
+* 常量池指的是在编译期被确定，并被保存在已编译的.class文件中的一些数据。它包括了关于类、方法、接口等中的常量，也包括字符串常量。
+* Java会确保一个常量池中相同的字符串常量有且仅有一个
 
 ## 3 String.intern方法
 
-String str="kvill" 和 String str=new String("kvill")的区别
+* String str="kvill" 和 String str=new String("kvill")的区别
 
 "kvill"都是字符串常量，它们在编译期就被确定了, 会在常量池中创建一个"kvill"字符串对象
 用new String("kvill") 创建的字符串不是字符串常量，不能在编译期就确定，所以new String() 创建的字符串不放入常量池中，存放在堆空间
 
 
-String对象的创建
+* String对象的创建
 
     String str1 = new String("kvill")；
     String str2 = new String("kvill");
 
 new str1时创建了两个对象，先在常量池中创建的"kvill"对象，再在堆中创建string对象，注意这个创建的先后顺序;
 new str2时创建一个对象，堆中的另外一个string对象
-String s1=new String("str") + new String("01");//会在堆中新建s1对象"str01"; 
-String s2 = new String(s1);
-
+```java
+    String s1=new String("str") + new String("01");//会在堆中新建s1对象"str01"; 
+    String s2 = new String(s1);
+```
 这种方式创建s2的过程中，并不会去常量池中创建s1的"str01"对象，而是仅在堆里创建一个s2对象
 示例1
 ```java
