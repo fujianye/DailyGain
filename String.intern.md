@@ -157,7 +157,13 @@ jdk6
         System.out.println(s1 == s4);
 ```
 输出true，因为final变量在编译后会直接替换成对应的值，所以实际上等于s4=“a”+”bc”，而这种情况下，编译器会直接合并为s4=“abc”，所以最终s1==s4。
+```java
+        String str1 = new StringBuilder("计算机").append("软件").toString();
+        System.out.println(str1.intern() == str1);
 
+        String str2 = new StringBuilder("ja").append("va").toString();
+        System.out.println(str2.intern() == str2);
+```
 
 转载
 https://www.jianshu.com/p/d5ecfceccccd
