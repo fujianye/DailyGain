@@ -4,13 +4,13 @@
 
 ### 字符串常量池的需要
 
-字符串常量池的诞生是为了提升效率和减少内存分配
-程序有大部分时间在处理字符串，字符串很大概率会出现重复的情况。String的不可变性使常量池很容易被管理和优化
+字符串常量池的诞生是为了`提升效率和减少内存分配`
+程序有大部分时间在处理字符串，字符串很大概率会出现重复的情况。String的不可变性`使常量池很容易被管理和优化`
 
 
 ### 安全性考虑
 
-字符串使用频繁，设计成不可变，有效防止字符串被有意或者无意的篡改
+字符串使用频繁，设计成不可变，`有效防止字符串被有意或者无意的篡改`
 String类被final修饰，同时所有的属性都被final修饰，即不可变
 
 
@@ -133,21 +133,21 @@ System.out.println(s2.intern() == s2); //s2.intern()发现没常量池中没有"
 
 # 三 其他问题
 
-String s1 = “abc”;
-String s2 = “a”;
-String s3 = “bc”;
-String s4 = s2 + s3;
-System.out.println(s1 == s4);
+        String s1 = “abc”;
+        String s2 = “a”;
+        String s3 = “bc”;
+        String s4 = s2 + s3;
+        System.out.println(s1 == s4);
 输出false，因为s2+s3实际上是使用StringBuilder.append来完成，会生成不同的对象。
 
-String s1 = “abc”;
-final String s2 = “a”;
-final String s3 = “bc”;
-String s4 = s2 + s3;
-System.out.println(s1 == s4);
+        String s1 = “abc”;
+        final String s2 = “a”;
+        final String s3 = “bc”;
+        String s4 = s2 + s3;
+        System.out.println(s1 == s4);
 输出true，因为final变量在编译后会直接替换成对应的值，所以实际上等于s4=“a”+”bc”，而这种情况下，编译器会直接合并为s4=“abc”，所以最终s1==s4。
 
 
-转载、引用请标明出处
+转载
 https://www.jianshu.com/p/d5ecfceccccd
 本文出自zhh_happig的简书博客，谢谢
