@@ -274,9 +274,9 @@ synchronized ( pool.intern("BizCode"+userId)){
 }
 ```
 代码参考TEST类：https://chromium.googlesource.com/external/guava-libraries/+/release15/guava-tests/test/com/google/common/collect/InternersTest.java
- 原理？折腾一下看看这个类的原码吧~其实实现并不难，就是折腾而已~API上是这么说的：
+ 原理？折腾一下看看这个类的原码吧，API上是这么说的：
 > Interners.newWeakInterner()
->Returns a new thread-safe interner which retains a weak reference to each instance it has interned, and so does not prevent these instances from being garbage-collected. This most likely does not perform as well as newStrongInterner(), but is the best alternative when the memory usage of that implementation is unacceptable. Note that unlike String.intern(), using this interner does not consume memory in the permanent generation.
+> Returns a new thread-safe interner which retains a weak reference to each instance it has interned, and so does not prevent these instances from being garbage-collected. This most likely does not perform as well as newStrongInterner(), but is the best alternative when the memory usage of that implementation is unacceptable. Note that unlike String.intern(), using this interner does not consume memory in the permanent generation.
 
 这样就可以解决FULL GC问题了吧。效果如何？试试看。
 
