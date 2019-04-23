@@ -232,8 +232,9 @@ Heap
   object space 21248K, 12% used [0x000000067ae00000,0x000000067b0a93e0,0x000000067c2c0000)
 ```
 使用了 intern() 方法的结果：
->4838ms
->[GC [PSYoungGen: 2359296K->156506K(2752512K)] 2359296K->156506K(2757888K), 0.1962062 secs] [Times: user=0.69 sys=0.01, real=0.20 secs] 
+```java
+4838ms
+[GC [PSYoungGen: 2359296K->156506K(2752512K)] 2359296K->156506K(2757888K), 0.1962062 secs] [Times: user=0.69 sys=0.01, real=0.20 secs] 
 [Full GC (System) [PSYoungGen: 156506K->156357K(2752512K)] [PSOldGen: 0K->18K(5376K)] 156506K->156376K(2757888K) [PSPermGen: 2708K->2708K(21248K)], 0.2576126 secs] [Times: user=0.25 sys=0.00, real=0.26 secs] 
 DE
 Heap
@@ -245,7 +246,42 @@ Heap
   object space 5376K, 0% used [0x0000000680000000,0x0000000680004b30,0x0000000680540000)
  PSPermGen       total 21248K, used 2725K [0x000000067ae00000, 0x000000067c2c0000, 0x0000000680000000)
   object space 21248K, 12% used [0x000000067ae00000,0x000000067b0a95d0,0x000000067c2c0000)
+```
 可以看到结果差别十分的大。在使用 intern() 方法的时候，程序耗时多了 3 秒，但节省了很大一块内存。使用 intern() 方法的程序占用了 253472K(250M) 内存，而不使用的占用了 2397635K (2.4G)。从这些可以看出使用 intern 的利弊。
+
+# 五 用String.intern()作为synchronized的对象锁
+String.intern放进的StringTable是一个固定大小的Hashtable，默认值是1009，如果放进StringTable的String非常多，就会造成Hash冲突严重，从而导致链表会很长，而链表长了后直接会造成的影响就是当调用String.intern时性能会大幅下降（因为要一个一个找）。
+
+现在仔细想想，看来当时这个case并不是因为频繁抛异常造成的，而是因为这个case中抛的是NoSuchMethodException，而抛这个异常的原因是因为调用了Class.getMethod找方法没找到，在class.getMethod这方法的实现里会调用name.intern，而很不幸的是这个case里传入的name会根据请求而变，因此导致了StringTable中放入了很多的String，hash冲突严重，链表变长，从而才导致了造成了String.intern过程变得比较耗CPU。
+
+JDK为了解决这个问题，在6u32以及JDK 7的版本里支持了StringTable大小的配置功能，可在启动参数上增加-XX:StringTableSize来设置，具体的信息见：http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6962930
+不过目前JDK未提供方法来查看StringTable中各桶的链表长度，如果提供这个的话就更好了
+了解String.intern()在jdk7的变化后,我们为了在单例类里并发时对同一个用户保证操作原子性,会加同步块,例如:
+```java
+synchronized (("" + userId).intern()) {
+            // TODO:something
+   }
+ ```
+这个在jdk6里问题不算大,因为String.intern()会在perm里产生空间,如果perm空间够用的话,这个不会导致频繁Full GC,
+但是在jdk7里问题就大了,String.intern()会在heap里产生空间,而且还是老年代,如果对象一多就会导致Full GC时间超长!!!
+慎用啊!
+解决办法见下面：
+这里要引用强大的google-guava包，这个包不是一般的强大，是完全要把apache-commons*取缔掉的节奏啊！！！
+```java
+Interner<String> pool = Interners.newWeakInterner();
+synchronized ( pool.intern("BizCode"+userId)){
+    //TODO:something
+}
+```
+代码参考TEST类：https://chromium.googlesource.com/external/guava-libraries/+/release15/guava-tests/test/com/google/common/collect/InternersTest.java
+ 原理？折腾一下看看这个类的原码吧~其实实现并不难，就是折腾而已~API上是这么说的：
+> Interners.newWeakInterner()
+>Returns a new thread-safe interner which retains a weak reference to each instance it has interned, and so does not prevent these instances from being garbage-collected. This most likely does not perform as well as newStrongInterner(), but is the best alternative when the memory usage of that implementation is unacceptable. Note that unlike String.intern(), using this interner does not consume memory in the permanent generation.
+
+这样就可以解决FULL GC问题了吧。效果如何？试试看。
+
+厄.其实这样也会使堆产生很多String,但能被回收掉
+
 
 参考资料：
 1.https://www.zhihu.com/question/57124207/answer/151835713
