@@ -175,8 +175,80 @@ jdk6
 第一个返回true的原因是 JDK1.7等虚拟机的intern()实现不会复制实例，而是在常量池中记录首次出现的实例引用，因此第一个返回的是true，这里也没有问题。
 至于第二个返回false的例子，书上的解析是
 >java这个字符串在执行StringBuilder.toString()之前已经出现过，字符串常量池中早已有它的引用。所以返回false
+最初的猜想是'java'看起来像个保留字，是不是在JVM启动的时候已经写到常量池里了，类似的还有'main'、'int'、'float'。
+于是测试了下以下例子,进一步验证了猜想
+```java
+    String str1 = new StringBuilder("jc").append( "vc" ).toString();//true
+    System.out.println(str1.intern()==str1);
+    String str2=new StringBuilder("mai").append( "n" ).toString();  //false
+    System.out.println(str2.intern()==str2);    
+    String str3=new StringBuilder("in").append( "t" ).toString();   //flase
+    System.out.println(str3.intern()==str3);    
+    String str4=new StringBuilder("flo").append( "at" ).toString(); //flase
+    System.out.println(str4.intern()==str4);
+```
+# 四 如何确定 intern 的效率
+最好的方法是对整个堆执行一次堆转储。堆转储也会在发生 OutOfMemoryError 时执行。
+在 MAT （内存分析工具，译者注）中打开转储文件，然后选择 java.lang.String，依次点击“Java Basics”、“Group By Value”。
 
-链接：https://www.jianshu.com/p/b98851899f37
-转载
-https://www.jianshu.com/p/d5ecfceccccd
-本文出自zhh_happig的简书博客，谢谢
+根据堆的大小，上面的操作可能耗费比较长的时间。最后可以看到类型这样的结果。按 “Retained Heap” 或者是 “Objects” 列进行排序，可以发现一些有趣的东西：
+
+从这快照中我们可以看到，空的字符串占用了大量的内存！两百万个空字符串对象占用了总共 130 MB 的空间。另外可以看到一部分被加载的 JavaScript 脚本，一些作为键的字符串，它们被用于定位。另外，还有一些与业务逻辑相关的字符串。
+
+这些与业务逻辑相关的字符串是最容易进行 intern 操作的，因为我们清楚地知道它们是在什么地方被加载进内存的。对于其他字符串，可以通过 “Merge shortest Path to GC Root” 选项来找到它们被存储的位置，这个信息也许能够帮助我们找到该使用 intern 的地方。
+
+## intern 的利弊
+既然 intern() 方法有这些好处，为什么不经常使用呢？原因在于它会降低代码效率。下面给出一个例子：
+```java
+private static final int MAX = 40000000;
+public static void main(String[] args) throws Exception {
+    long t = System.currentTimeMillis();
+    String[] arr = new String[MAX];
+    for (int i = 0; i < MAX; i++) {
+        arr[i] = new String(DB_DATA[i % 10]);
+        // and: arr[i] = new String(DB_DATA[i % 10]).intern();
+    }
+    System.out.println((System.currentTimeMillis() - t) + "ms");
+    System.gc();
+    System.out.println(arr[0]);
+}
+```
+代码中使用了字符串数组来维护到字符串对象的强引用，另外我们还打印了数组的第一个元素来避免数组由于代码优化而将数组给销毁了。接着从数据库加载 10 个不同的字符串，但在这里我使用了 new String() 来创建一个临时的字符串，这和从数据库里读是一样的。最后我们调用了系统的 GC() 方法，这样就能排除其他不相关对象的影响，保证结果的正确。 在 64 位，8 G 内存，i5-2520M 处理器的 Windows 系统上运行上面的代码， 环境为 JDK 1.6.0_27，指定虚拟机参数 -XX:+PrintGCDetails -Xmx6G -Xmn3G 记录垃圾回收日志。结果如下：
+
+没有使用 intern() 方法的结果：
+>1519ms
+>[GC [PSYoungGen: 2359296K->393210K(2752512K)] 2359296K->2348002K(4707456K), 5.4071058 secs] [Times: user=8.84 sys=1.00,real=5.40 secs] 
+[Full GC (System) [PSYoungGen: 393210K->392902K(2752512K)] [PSOldGen: 1954792K->1954823K(1954944K)] 2348002K->2347726K(4707456K) [PSPermGen: 2707K->2707K(21248K)], 5.3242785 secs] [Times: user=3.71 sys=0.20, real=5.32 secs] 
+>DE
+>Heap
+> PSYoungGen      total 2752512K, used 440088K [0x0000000740000000, 0x0000000800000000, 0x0000000800000000)
+>  eden space 2359296K, 18% used [0x0000000740000000,0x000000075adc6360,0x00000007d0000000)
+>  from space 393216K, 0% used [0x00000007d0000000,0x00000007d0000000,0x00000007e8000000)
+>  to   space 393216K, 0% used [0x00000007e8000000,0x00000007e8000000,0x0000000800000000)
+> PSOldGen        total 1954944K, used 1954823K [0x0000000680000000, 0x00000006f7520000, 0x0000000740000000)
+>  object space 1954944K, 99% used [0x0000000680000000,0x00000006f7501fd8,0x00000006f7520000)
+> PSPermGen       total 21248K, used 2724K [0x000000067ae00000, 0x000000067c2c0000, 0x0000000680000000)
+>  object space 21248K, 12% used [0x000000067ae00000,0x000000067b0a93e0,0x000000067c2c0000)
+
+使用了 intern() 方法的结果：
+>4838ms
+>[GC [PSYoungGen: 2359296K->156506K(2752512K)] 2359296K->156506K(2757888K), 0.1962062 secs] [Times: user=0.69 sys=0.01, real=0.20 secs] 
+[Full GC (System) [PSYoungGen: 156506K->156357K(2752512K)] [PSOldGen: 0K->18K(5376K)] 156506K->156376K(2757888K) [PSPermGen: 2708K->2708K(21248K)], 0.2576126 secs] [Times: user=0.25 sys=0.00, real=0.26 secs] 
+DE
+Heap
+ PSYoungGen      total 2752512K, used 250729K [0x0000000740000000, 0x0000000800000000, 0x0000000800000000)
+  eden space 2359296K, 10% used [0x0000000740000000,0x000000074f4da6f8,0x00000007d0000000)
+  from space 393216K, 0% used [0x00000007d0000000,0x00000007d0000000,0x00000007e8000000)
+  to   space 393216K, 0% used [0x00000007e8000000,0x00000007e8000000,0x0000000800000000)
+ PSOldGen        total 5376K, used 18K [0x0000000680000000, 0x0000000680540000, 0x0000000740000000)
+  object space 5376K, 0% used [0x0000000680000000,0x0000000680004b30,0x0000000680540000)
+ PSPermGen       total 21248K, used 2725K [0x000000067ae00000, 0x000000067c2c0000, 0x0000000680000000)
+  object space 21248K, 12% used [0x000000067ae00000,0x000000067b0a95d0,0x000000067c2c0000)
+可以看到结果差别十分的大。在使用 intern() 方法的时候，程序耗时多了 3 秒，但节省了很大一块内存。使用 intern() 方法的程序占用了 253472K(250M) 内存，而不使用的占用了 2397635K (2.4G)。从这些可以看出使用 intern 的利弊。
+
+参考资料：
+1.https://www.zhihu.com/question/57124207/answer/151835713
+2.https://www.zhihu.com/question/51102308/answer/124441115
+3.http://blog.csdn.net/raintungli/article/details/38595573
+4.https://www.jianshu.com/p/d5ecfceccccd
+5.https://www.jianshu.com/p/b98851899f37
