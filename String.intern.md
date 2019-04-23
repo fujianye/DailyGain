@@ -23,7 +23,13 @@
 * Java会确保一个常量池中相同的字符串常量有且仅有一个
 
 ## 3 String.intern方法
-
+### 使用intern的理由
+在等价比较上的性能提升并不是应该使用 intern 的理由。实际上，intern 的目的在于复用字符串对象以节省内存。
+在明确知道一个字符串会出现多次时才使用 intern(),并且只用它来节省内存。
+使用 intern() 方法的效率，取决于重复的字符串与唯一的字符串的比值。另外，还要看在产生字符串对象的地方，代码是不是容易进行修改。
+### intern原理
+intern() 方法需要传入一个字符串对象（已存在于堆上），然后检查 StringTable 里是不是已经有一个相同的拷贝。StringTable 可以看作是一个 HashSet，它将字符串分配在永久代上。StringTable 存在的唯一目的就是维护所有存活的字符串的一个对象。如果在 StringTable 里找到了能够找到所传入的字符串对象，那就直接返回它，否则，把它加入 StringTable 
+### intern用法
 * String str="kvill" 和 String str=new String("kvill")的区别
 
 "kvill"都是字符串常量，它们在编译期就被确定了, 会在常量池中创建一个"kvill"字符串对象
