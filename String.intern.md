@@ -170,7 +170,13 @@ jdk6
         String str2 = new StringBuilder("ja").append("va").toString();
         System.out.println(str2.intern() == str2);
 ```
+在Jdk1.6的时候均返回false，这个容易理解，因为intern()方法会把首次遇到的字符串实例复制到永久代中，而new StringBuilder创建出来的对象是在堆上的，所以str1.intern()拿出来的对象跟新创建的对象不相等。
+而在JDK1.7上，第一个true，第二个flase.
+第一个返回true的原因是 JDK1.7等虚拟机的intern()实现不会复制实例，而是在常量池中记录首次出现的实例引用，因此第一个返回的是true，这里也没有问题。
+至于第二个返回false的例子，书上的解析是
+>java这个字符串在执行StringBuilder.toString()之前已经出现过，字符串常量池中早已有它的引用。所以返回false
 
+链接：https://www.jianshu.com/p/b98851899f37
 转载
 https://www.jianshu.com/p/d5ecfceccccd
 本文出自zhh_happig的简书博客，谢谢
