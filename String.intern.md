@@ -190,9 +190,9 @@ jdk6
 # 四 如何确定 intern 的效率
 最好的方法是对整个堆执行一次堆转储。堆转储也会在发生 OutOfMemoryError 时执行。
 在 MAT （内存分析工具，译者注）中打开转储文件，然后选择 java.lang.String，依次点击“Java Basics”、“Group By Value”。
-
+![](https://github.com/fujianye/DailyGain/blob/master/MAT%E5%88%86%E6%9E%90%E5%86%85%E5%AD%982.png)
 根据堆的大小，上面的操作可能耗费比较长的时间。最后可以看到类型这样的结果。按 “Retained Heap” 或者是 “Objects” 列进行排序，可以发现一些有趣的东西：
-
+![](https://github.com/fujianye/DailyGain/blob/master/MAT%E5%88%86%E6%9E%90%E5%86%85%E5%AD%98.png)
 从这快照中我们可以看到，空的字符串占用了大量的内存！两百万个空字符串对象占用了总共 130 MB 的空间。另外可以看到一部分被加载的 JavaScript 脚本，一些作为键的字符串，它们被用于定位。另外，还有一些与业务逻辑相关的字符串。
 
 这些与业务逻辑相关的字符串是最容易进行 intern 操作的，因为我们清楚地知道它们是在什么地方被加载进内存的。对于其他字符串，可以通过 “Merge shortest Path to GC Root” 选项来找到它们被存储的位置，这个信息也许能够帮助我们找到该使用 intern 的地方。
