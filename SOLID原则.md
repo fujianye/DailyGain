@@ -19,6 +19,7 @@ D dependency inversion principle 依赖倒置
 
 # Liskvo Subsituation 里式替换原则
 
+
 # Interface segregation 接口隔离原则
 
 # Dependency inversion 依赖倒置原则
