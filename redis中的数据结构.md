@@ -8,7 +8,7 @@
 
 Redis中，不同的数据类型广泛地应用了压缩列表编码，整理如下表：
 
-
+[image]https://github.com/fujianye/DailyGain/blob/master/images/%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8.png
 
 Redis中数据结构类型与压缩列表的应用
 
