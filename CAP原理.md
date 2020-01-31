@@ -20,7 +20,7 @@
 所以在实际的设计和开发中，我们要灵活运用CAP理论，灵活选择AP或CP架构。
 
 # CA取舍
-
+![网络分区时的状态](https://github.com/fujianye/DailyGain/edit/master/CAP%E5%8E%9F%E7%90%86.md '描述信息')
 
 # CAP原理应用场景
 ## 适合CAP原理的场景
