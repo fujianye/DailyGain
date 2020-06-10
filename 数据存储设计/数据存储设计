@@ -192,8 +192,6 @@ commit transaction
 先从order里把历史订单拉出来，在内存里把订单ID列表组装起来分别取批量查询应付、接送机信息、判责结果信息，然后在内存里组装这些信息。（运行时合并）
 
 
-
-
 物化视图：“运行时合并”在某些情况并不能满足查询速度的要求，数据从主存储里提前同步到索引中。视图直接查询索引
 比如广告，广告是要把素材提前推到索引中，
 
@@ -210,6 +208,8 @@ Mysql索引：Hbase只能主键索引，mysql可以给多字段加索引，但�
 Elasticsearch：多字段索引，而且可以无序
 Mysql冗余字段：暴力扫描再快，也比不上提前计算（提前把索引计算出来，放在冗余字段做索引）
 
+账户的历史订单查询可以使用hbase.
+
 （如何靠谱同步？）
 主存储  ===>  物化视图
        同步
@@ -219,7 +219,6 @@ Mysql冗余字段：暴力扫描再快，也比不上提前计算（提前把索
 
 索引同步方式二：数据层binlog同步
 案例：分身系统
-
 表记录 oid（index） pid did time
   || 以oid分库分表，需要pid的索引访问。根据binlog
   \/ 
@@ -237,7 +236,7 @@ carpool 按用户ID建模的行程列表
     /   \
    /     \
  order   carpool
- 双写很多时候不靠谱，异常case很多 。insert完order 和 carpool，还要额外select order 和 carpool，再double-check一次
+ 双写很多时候不靠谱，异常case很多 。insert完order 和 carpool，还要额外select order 和 carpool，再double-check一次，如果不一致 走兜底逻辑。
 
  索引同步方式四：业务层read-through
 典型的cache方式
@@ -256,6 +255,7 @@ carpool 按用户ID建模的行程列表
 
 
 二、业务流程
+（既然）
 业务流程就是分布式事务，分布式事务就是业务流程。
 
 不追求Raft Paxos
