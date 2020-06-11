@@ -29,6 +29,14 @@ XA-2PC提交协议中会遇到的一些问题：
 CanCommit阶段的加入:多设置了一个缓冲阶段保证了在最后提交阶段之前各参与节点的状态是一致的.避免了一些2PC中第一阶段的不必要的数据库资源占用。
 超时机制：一旦事务参与者迟迟没有收到协调者的Commit请求，就会在超时后自动进行本地commit，这样相对有效地解决了协调者单点故障的问题。
 
+事实上XA也算分布式事务处理的规范了，但在为什么互联网中很少使用，究其原因我觉得有以下几个：
+1）性能（阻塞性协议，增加响应时间、锁时间、死锁）；
+2）数据库支持完善度（MySQL 5.7之前都有缺陷）；
+3）协调者依赖独立的J2EE中间件（早期重量级Weblogic、Jboss、后期轻量级Atomikos、Narayana和Bitronix）；
+4）运维复杂，DBA缺少这方面经验；
+5）并不是所有资源都支持XA协议；
+6）大厂懂所以不使用，小公司不懂所以不敢用。
+
 3、TCC try-commit-cancel
 2PC、3PC都是在跨库的DB层面，而TCC本质上就是一个应用层面的2PC，需要通过业务逻辑来实现。
 TCC又称补偿事务。其核心思想是："针对每个操作都要注册一个与其对应的确认和补偿（撤销操作）"。
@@ -73,3 +81,6 @@ TCC的commit-cancel阶段可以异步离线处理，可以不断重试。
 2PC、3PC参考：https://blog.csdn.net/bjweimengshu/article/details/86698036
 事务消息参考：https://mp.weixin.qq.com/s?__biz=MzU3NDY4NzQwNQ==&mid=2247484388&idx=1&sn=fe37be7b3f06ca8519ff1f89e0ad006a&chksm=fd2fd226ca585b305db8323092d72d7b0f9480f1df7e8ab8223f285f80866b6fd047007827b2&scene=21#wechat_redirect
 RocketMQ 参考：https://mp.weixin.qq.com/s?__biz=MzU3NDY4NzQwNQ==&mid=2247484461&idx=1&sn=72794d12ffe3c8ec3520fdba1c87c3b3&chksm=fd2fd5efca585cf955d240bbabd99b24262d255a3880454297f10a84e4c38445bc7b9d3ba339&scene=21#wechat_redirect
+事务消息参考：http://silence.work/2018/08/22/RocketMQ-4-3%E4%BA%8B%E5%8A%A1%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%88%86%E6%9E%90/
+
+
