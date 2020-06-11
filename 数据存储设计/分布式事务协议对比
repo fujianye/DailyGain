@@ -4,8 +4,16 @@ XA协议包括两阶段提交（2PC）和三阶段提交（3PC）两种实现。
 第一阶段：请求/表决阶段。
 就是在分布式事务的发起方在向分布式事务协调者（Coordinator）发送请求时，
 Coordinator首先会分别向参与者（Partcipant）节点A、参与者（Partcipant）节点B分别发送事务预处理请求，称之为Prepare，有些资料也叫"Vote Request"。
+第二阶段：提交/执行阶段（正常流程）
+如果所有参与者节点都向协调者报告说“我这边可以处理”，那么此时协调者就会向所有参与者节点发送“全局提交确认通知（global_commit）”，
+即你们都可以进行本地事务提交了，此时参与者节点就会完成自身本地数据库事务的提交，并最终将提交结果回复“ack”消息给Coordinator，
+然后Coordinator就会向调用方返回分布式事务处理完成的结果。
+第二阶段：提交
+
+
+2、3PC 也是XA协议的一种。
 
 
 
 
-2PC参考：https://blog.csdn.net/bjweimengshu/article/details/86698036
+2PC、3PC参考：https://blog.csdn.net/bjweimengshu/article/details/86698036
