@@ -42,7 +42,7 @@ CanCommit阶段的加入:多设置了一个缓冲阶段保证了在最后提交�
 TCC又称补偿事务。其核心思想是："针对每个操作都要注册一个与其对应的确认和补偿（撤销操作）"。
 TCC的实现方式的优势在于，可以让应用自己定义数据库操作的粒度，使得降低锁冲突、提高吞吐量成为可能。
 TCC需要通过业务逻辑实现3个关键点：1、每个分支（支付的内部渠道）都要实现try、confirm、cancel 3个接口；2、根据超时、系统故障等异常实现回滚逻辑；3、try、confirm、cancel 3个接口必须幂等。
-
+TCC需要允许空回滚，需要防悬挂。
 TCC的commit-cancel阶段可以异步离线处理，可以不断重试。因为try阶段的结果就决定了commit一定可以执行成功或者一定失败，可以明确的执行commit或cancel.
 
 4、MQ事务消息
@@ -87,4 +87,5 @@ TCC的commit-cancel阶段可以异步离线处理，可以不断重试。
 RocketMQ 参考：https://mp.weixin.qq.com/s?__biz=MzU3NDY4NzQwNQ==&mid=2247484461&idx=1&sn=72794d12ffe3c8ec3520fdba1c87c3b3&chksm=fd2fd5efca585cf955d240bbabd99b24262d255a3880454297f10a84e4c38445bc7b9d3ba339&scene=21#wechat_redirect
 事务消息参考：http://silence.work/2018/08/22/RocketMQ-4-3%E4%BA%8B%E5%8A%A1%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%88%86%E6%9E%90/
 参考：https://my.oschina.net/zhaoyi1/blog/3135469
-
+空回滚、防悬挂 参考：https://zhuanlan.zhihu.com/p/78599954
+saga 参考：https://zhuanlan.zhihu.com/p/78599954
