@@ -77,10 +77,13 @@ TCC的commit-cancel阶段可以异步离线处理，可以不断重试。
 一致性       各个参与者节点数据不一致                    各个参与者节点数据不一致               各个参与者节点数据可以达到较高一致   
 
 
+分布式事务一直是业界难题，难在于CAP定理，在于分布式系统8大错误假设，在于FLP不可能原理，在于我们习惯于单机事务ACID做对比。
+无论是数据库领域XA、Google percolator或Calvin模型，还是微服务下Saga、TCC、可靠消息等方案，都没有完美解决分布式事务问题，
+它们不过是各自在性能、一致性、可用性等方面做取舍，寻求某些场景偏好下的权衡。
 
 2PC、3PC参考：https://blog.csdn.net/bjweimengshu/article/details/86698036
 事务消息参考：https://mp.weixin.qq.com/s?__biz=MzU3NDY4NzQwNQ==&mid=2247484388&idx=1&sn=fe37be7b3f06ca8519ff1f89e0ad006a&chksm=fd2fd226ca585b305db8323092d72d7b0f9480f1df7e8ab8223f285f80866b6fd047007827b2&scene=21#wechat_redirect
 RocketMQ 参考：https://mp.weixin.qq.com/s?__biz=MzU3NDY4NzQwNQ==&mid=2247484461&idx=1&sn=72794d12ffe3c8ec3520fdba1c87c3b3&chksm=fd2fd5efca585cf955d240bbabd99b24262d255a3880454297f10a84e4c38445bc7b9d3ba339&scene=21#wechat_redirect
 事务消息参考：http://silence.work/2018/08/22/RocketMQ-4-3%E4%BA%8B%E5%8A%A1%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%88%86%E6%9E%90/
-
+参考：https://my.oschina.net/zhaoyi1/blog/3135469
 
