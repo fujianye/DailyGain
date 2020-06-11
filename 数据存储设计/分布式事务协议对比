@@ -72,4 +72,4 @@ TCC的commit-cancel阶段可以异步离线处理，可以不断重试。
 
 2PC、3PC参考：https://blog.csdn.net/bjweimengshu/article/details/86698036
 事务消息参考：https://mp.weixin.qq.com/s?__biz=MzU3NDY4NzQwNQ==&mid=2247484388&idx=1&sn=fe37be7b3f06ca8519ff1f89e0ad006a&chksm=fd2fd226ca585b305db8323092d72d7b0f9480f1df7e8ab8223f285f80866b6fd047007827b2&scene=21#wechat_redirect
-
+RocketMQ 参考：https://mp.weixin.qq.com/s?__biz=MzU3NDY4NzQwNQ==&mid=2247484461&idx=1&sn=72794d12ffe3c8ec3520fdba1c87c3b3&chksm=fd2fd5efca585cf955d240bbabd99b24262d255a3880454297f10a84e4c38445bc7b9d3ba339&scene=21#wechat_redirect
