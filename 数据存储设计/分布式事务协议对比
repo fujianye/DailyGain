@@ -1,0 +1,11 @@
+分布式事务的实现方式有很多种，最具有代表性的是由Oracle Tuxedo系统提出的XA分布式事务协议。
+XA协议包括两阶段提交（2PC）和三阶段提交（3PC）两种实现。
+1、2PC 是XA协议的一种。
+第一阶段：请求/表决阶段。
+就是在分布式事务的发起方在向分布式事务协调者（Coordinator）发送请求时，
+Coordinator首先会分别向参与者（Partcipant）节点A、参与者（Partcipant）节点B分别发送事务预处理请求，称之为Prepare，有些资料也叫"Vote Request"。
+
+
+
+
+2PC参考：https://blog.csdn.net/bjweimengshu/article/details/86698036
