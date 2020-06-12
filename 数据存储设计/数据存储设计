@@ -137,7 +137,7 @@ update order set status = new_status where status in (status_1,status_2);
 2、案例二：账户余额
 start transaction
   insert transaction_bill;
-  update account set balance = balance + delta where balance > 0 and status = normal;
+  update account set balance = balance - delta where balance > 0 and status = normal;
 commit transaction
 实体状态（account）解决主存储的规则判断问题（账户有余额并且不是冻结状态）
 单据（transaction_bill）解决并发冲突问题，实现rpc幂等
@@ -193,7 +193,7 @@ commit transaction
 
 
 物化视图：“运行时合并”在某些情况并不能满足查询速度的要求，数据从主存储里提前同步到索引中。视图直接查询索引
-比如广告，广告是要把素材提前推到索引中，
+比如广告，广告是要把素材提前推到索引中
 
 数据库的创新发展历史
 最开始的key-value ==> 关系型数据库(降低开发成本) ==> hbase等内存型数据库（检索速度）
@@ -292,6 +292,7 @@ Saga pattern：所做的每一步操作都要记录下来，假如rpcn执行失�
 1、event 和 state 同步，比如account 和 transaction_bill
 2、主存储和物化视图的同步
 3、一个操作更新多个存储，也是一种“同步”
+
 分层解决各自的问题，如下：
   场景服务（系分市场）
   业务流程层（能够扩展和定制，account的sql语句中的业务逻辑也应该抽离出来作为可配置的业务规则）
