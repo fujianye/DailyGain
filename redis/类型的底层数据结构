@@ -30,7 +30,7 @@ list会优先考虑使用ziplist作为底层实现， 并且在有需要的时�
 
 Hash 
 hash类型键使用以下两种数据结构作为底层实现:字典、ziplist。
-
+因为压缩列表比字典更节省内存， 所以程序在创建新 Hash 键时， 默认使用压缩列表作为底层实现， 当有需要时， 程序才会将底层实现从压缩列表转换到字典。
 
 
 参考：https://origin.redisbook.com/compress-datastruct/ziplist.html
