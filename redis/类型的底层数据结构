@@ -1,0 +1,35 @@
+
+
+zset
+有序集合对象的编码可以是ziplist或者skiplist。
+同时满足以下条件时使用ziplist编码：
+（1）元素数量小于128个
+（2）所有member的长度都小于64字节
+以上两个条件的上限值可通过zset-max-ziplist-entries和zset-max-ziplist-value来修改。
+ziplist编码的有序集合使用紧挨在一起的压缩列表节点来保存，第一个节点保存member，第二个保存score。
+ziplist内的集合元素按score从小到大排序，score较小的排在表头位置。
+每个有序集元素以两个相邻的 ziplist 节点表示， 第一个节点保存元素的 member 域， 第二个元素保存元素的 score 域。
+
+多个元素之间按 score 值从小到大排序， 如果两个元素的 score 相同， 那么按字典序对 member 进行对比， 决定那个元素排在前面， 那个元素排在后面。
+
+          |<--  element 1 -->|<--  element 2 -->|<--   .......   -->|
+
++---------+---------+--------+---------+--------+---------+---------+---------+
+| ZIPLIST |         |        |         |        |         |         | ZIPLIST |
+| ENTRY   | member1 | score1 | member2 | score2 |   ...   |   ...   | ENTRY   |
+| HEAD    |         |        |         |        |         |         | END     |
++---------+---------+--------+---------+--------+---------+---------+---------+
+
+score1 <= score2 <= ...
+虽然元素是按 score 域有序排序的， 但对 ziplist 的节点指针只能线性地移动， 所以在 REDIS_ENCODING_ZIPLIST 编码的有序集中， 查找某个给定元素的复杂度为 O(N) 。
+每次执行添加/删除/更新操作都需要执行一次查找元素的操作， 因此这些函数的复杂度都不低于 O(N) ， 至于这些操作的实际复杂度， 取决于它们底层所执行的 ziplist 操作。
+
+
+list
+list会优先考虑使用ziplist作为底层实现， 并且在有需要的时候， 才从ziplist实现转换到双端链表实现。
+
+
+
+参考：https://origin.redisbook.com/compress-datastruct/ziplist.html
+参考：https://zsr.github.io/2017/07/03/redis-zset%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0/
+参考：https://origin.redisbook.com/datatype/sorted_set.html
