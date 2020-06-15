@@ -1,0 +1,5 @@
+互联网很多“数据量较大，并发量较大，业务复杂度较高”的业务场景，
+例如在（1）底层表结构变更（2）分库个数变换（3）底层存储介质变换的众多需求下，
+需要进行数据迁移，如何“平滑迁移数据，迁移过程不停机，保证系统持续服务”。
+
+参考https://www.w3cschool.cn/architectroad/architectroad-data-smooth-migration.html
