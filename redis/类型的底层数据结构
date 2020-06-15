@@ -28,6 +28,9 @@ score1 <= score2 <= ...
 list
 list会优先考虑使用ziplist作为底层实现， 并且在有需要的时候， 才从ziplist实现转换到双端链表实现。
 
+Hash 
+hash类型键使用以下两种数据结构作为底层实现:字典、ziplist。
+
 
 
 参考：https://origin.redisbook.com/compress-datastruct/ziplist.html
