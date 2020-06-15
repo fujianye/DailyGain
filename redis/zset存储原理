@@ -1,3 +1,28 @@
+redis共有五种类型的对象：字符串（String）、列表（List）、哈希（Hash）、集合（Set）、有序集合（SortedSet）
+每种类型的对象至少都有两种或以上的编码方式；可以在不同的使用场景上优化对象的使用场景。用TYPE命令可查看某个键值对的类型。
+Redis目前使用的编码方式：
+/* Objects encoding. Some kind of objects like Strings and Hashes can be
+ * internally represented in multiple ways. The 'encoding' field of the object
+ * is set to one of this fields for this object. 
+ */
+#define OBJ_ENCODING_RAW     /* Raw representation */ 简单动态字符串
+#define OBJ_ENCODING_INT      /* Encoded as integer */ 整数
+#define OBJ_ENCODING_HT       /* Encoded as hash table */ 字典
+#define OBJ_ENCODING_ZIPLIST  /* Encoded as ziplist */ 压缩列表
+#define OBJ_ENCODING_INTSET   /* Encoded as intset */ 整数集合
+#define OBJ_ENCODING_SKIPLIST   /* Encoded as skiplist */ 跳跃表
+#define OBJ_ENCODING_EMBSTR  /* Embedded sds string encoding */ embstr编码的简单动态字符串
+#define OBJ_ENCODING_QUICKLIST  /* Encoded as linked list of ziplists */
 
 
-参考：https://zsr.github.io/2017/07/03/redis-zset%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0/
+ziplist:
+因为 ziplist 节约内存的性质， 哈希键、列表键和有序集合键初始化的底层实现皆采用 ziplist.
+先介绍 ziplist 的组成结构， 以及 ziplist 节点的编码方式。 再介绍 ziplist 的添加操作和删除操作的执行过程， 以及这两种操作可能引起的连锁更新现象。 最后介绍 ziplist 的遍历方法和节点查找方式。
+
+
+双端链表：
+
+
+skiplist:
+
+
