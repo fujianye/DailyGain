@@ -1,4 +1,10 @@
+BIO 到 NIO 到 多路复用器（select poll）到 epoll
+
+
+
 
 多路复用器：select 和 poll
 
-优势：通过
+优势：通过一次系统调用，把一组fd(即fds)传递给内核，
+
+
