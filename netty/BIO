@@ -1,0 +1,6 @@
+BIO中哪几个地方是blocking的：
+1、server的accept()是阻塞的，accept执行时，server处于wait状态，不能执行其他操作。只有当client连接到了server上，server才会被唤醒，执行accept之后的其他操作。
+2、和client对应的线程和client进行读写操作的read、write也是阻塞的。从连接通道socket中read时，假如client没有写消息，read取不到数据，就会一直阻塞，直到read能拿到消息为止。
+server处理完消息，write消息给client时，假如client不接收，线程也会阻塞。
+
+如果有很多client,会对应有很多线程，这么多的线程大多数时候都在阻塞中，cpu在这么多线程之间切换来切换去，效率非常低。所以一般情况下，网络编程不选择BIO。
