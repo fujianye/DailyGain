@@ -4,3 +4,5 @@ BIO中哪几个地方是blocking的：
 server处理完消息，write消息给client时，假如client不接收，线程也会阻塞。
 
 如果有很多client,会对应有很多线程，这么多的线程大多数时候都在阻塞中，cpu在这么多线程之间切换来切换去，效率非常低。所以一般情况下，网络编程不选择BIO。
+
+参考：https://www.bilibili.com/video/BV1i4411p7kk?from=search&seid=7463906819161683962
