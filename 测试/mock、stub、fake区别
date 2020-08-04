@@ -1,0 +1,11 @@
+Test Double(double极相似的对应物)。包含：Dummy，Fake，Spy，Mock和Stub。
+
+fake
+
+stub
+
+mock
+
+
+对于 Query 类型的方法我们会优先考虑使用 Stub 来代替方法的返回值，而对于 Command 类型的方法的测试则需要依赖于 Mock。
+
